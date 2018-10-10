@@ -208,15 +208,16 @@ function sortTaggedMethods() {
               console.log(uniqueArray);
                var output = "";
               for (var i in uniqueArray) {
+                var methodID = uniqueArray[i]["methodID"];
                 var uniqueName = uniqueArray[i]["uniqueName"];
                 var shortDesc = uniqueArray[i]["shortDesc"];
                 var longDesc = uniqueArray[i]["longDesc"];
                 var example = uniqueArray[i]["example"];
-                var test = uniqueArray[i]["text"]
+                var test = uniqueArray[i]["test"];
 
-                output += "<div class='card fluid'><h2>" + uniqueName + "</h2><p><strong>Short Description:</strong> " + shortDesc + "</p><p><strong>Long Description: </strong>" + longDesc + "</p><p><strong>Example: </strong>" + example + "</p><p><strong>Test: "+ test +"</strong></p></div>";
+                output += "<div class='card fluid'><h2>" + uniqueName + "</h2><p><strong>Short Description:</strong> " + shortDesc + "</p><p><strong>Long Description: </strong>" + longDesc + "</p><p><strong>Example: </strong>" + example + "</p><p><strong>Test: "+ test +"</strong></p><p><strong>Associated Tags: </strong><span id='tagContainer_"+ methodID +"'</p></span></div>";
                 document.getElementById("methodContainer").innerHTML = output;
-
+                getMethodTags(methodID);
               }
 
               // PRINT OUT UNIQUE ELEMENTS HERE
@@ -225,5 +226,24 @@ function sortTaggedMethods() {
         }
       }
       }
+    });
+}
+
+function getMethodTags(methodID){
+  var APILink = "https://silvertagapi.azurewebsites.net/api/methodTags/" + methodID;
+  fetch(APILink)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      // console.log(data);
+
+      var output = "";
+      for (var i in data) {
+        var tagName = data[i]["tagName"];
+
+        output += "<kbd>" + tagName + "</kbd> ";
+      }
+      document.getElementById("tagContainer_" + methodID).innerHTML = output;
     });
 }
