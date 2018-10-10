@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <link rel="stylesheet" href="css/mini-nord.css">
+  <link rel="stylesheet" href="css/master.css">
+
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <h1>Silver Information Architecture Prototype <small>Single Guideline</small></h1>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="nav">
+          <ul>
+            <li><a href="index.html">Home Page</a></li>
+            <li><a href="guidelines.html">View Guidelines</a></li>
+            <li><a href="methods.html">View Methods</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="row">
+        <div class="column">
+          <p>To view methods that are appropriate for this guideline please select from the tags below.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-9 row" id="tagCategories"></div>
+        <div class='col-sm-2'>
+          <div class=card>
+            <div class='section dark'>
+              <p><input type="checkbox" id="checkAll" onclick='sortTaggedMethods()'> Check All</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-sm-4">
+          <div id="guidelineContainer">
+          </div>
+        </div>
+        <div class="col-sm-8">
+          <div id="methodContainer">
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</body>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.0.2.js"></script>
+<script type="text/javascript" src="scripts/silverAPI.js"></script>
+<script type="text/javascript">
+  var url = window.location.href;
+  var params = url.split('?');
+  getSingleGuideline(params[1]);
+  getTagCategories();
+  window.addEventListener("load", function() {
+    sortTaggedMethods();
+  });
+</script>
+
+<script type="text/javascript">
+$("#checkAll").click(function () {
+    $('input:checkbox').not(this).prop('checked', this.checked);
+});
+</script>
+
+</html>
