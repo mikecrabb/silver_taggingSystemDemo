@@ -8,6 +8,7 @@ function getGuidelines() {
       console.log(data);
 
       var output = "";
+      document.getElementById("guidelineContainer").innerHTML = output;
       for (var i in data) {
         output = "";
         var guidelineID = data[i]["guidelineID"];
@@ -136,6 +137,26 @@ function getTagCategories() {
     });
 }
 
+function getAllTagCategories() {
+  var APILink = "https://silvertagapi.azurewebsites.net/api/categories";
+  fetch(APILink)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      // console.log(data);
+
+      var output = "";
+      for (var i in data) {
+        var tagCategoryID = data[i]["tagCategoryID"];
+        var tagCategoryName = data[i]["tagCategoryName"];
+        output = "<div class='col-sm-4'><div class=card><div class='section dark'><h3>" + tagCategoryName + "</h3></div><div class='section' id='tagCategory_" + tagCategoryID + "'></div></div></div>"
+        document.getElementById("tagCategories").innerHTML += output;
+        getAllTagTitles(tagCategoryID)
+      }
+    });
+}
+
 function getTagTitles(categoryID) {
   var APILink = "https://silvertagapi.azurewebsites.net/api/categoryTags/" + categoryID;
   fetch(APILink)
@@ -150,6 +171,25 @@ function getTagTitles(categoryID) {
         var tagID = data[i]["tagID"];
 
         output += "<p><input type='checkbox' id='tag_" + tagID + "' onclick='sortTaggedMethods()'>" + tagName + "</p>";
+      }
+      document.getElementById("tagCategory_" + categoryID).innerHTML += output;
+    });
+}
+
+function getAllTagTitles(categoryID) {
+  var APILink = "https://silvertagapi.azurewebsites.net/api/categoryTags/" + categoryID;
+  fetch(APILink)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      // console.log(data);
+      var output = "";
+      for (var i in data) {
+        var tagName = data[i]["tagName"];
+        var tagID = data[i]["tagID"];
+
+        output += "<p><input type='checkbox' id='tag_" + tagID + "' onclick='sortAllTaggedMethods()'>" + tagName + "</p>";
       }
       document.getElementById("tagCategory_" + categoryID).innerHTML += output;
     });
@@ -207,6 +247,81 @@ function sortTaggedMethods() {
             .then(function(uniqueArray) {
               console.log(uniqueArray);
                var output = "";
+               output += "<p>We've found <strong> " + uniqueArray.length + " </strong> methods that meet your current selection criteria</p>";
+              for (var i in uniqueArray) {
+                var methodID = uniqueArray[i]["methodID"];
+                var uniqueName = uniqueArray[i]["uniqueName"];
+                var shortDesc = uniqueArray[i]["shortDesc"];
+                var longDesc = uniqueArray[i]["longDesc"];
+                var example = uniqueArray[i]["example"];
+                var test = uniqueArray[i]["test"];
+
+                output += "<div class='card fluid'><h2>" + uniqueName + "</h2><p><strong>Short Description:</strong> " + shortDesc + "</p><p><strong>Long Description: </strong>" + longDesc + "</p><p><strong>Example: </strong>" + example + "</p><p><strong>Test: "+ test +"</strong></p><p><strong>Associated Tags: </strong><span id='tagContainer_"+ methodID +"'</p></span></div>";
+                document.getElementById("methodContainer").innerHTML = output;
+                getMethodTags(methodID);
+              }
+
+              // PRINT OUT UNIQUE ELEMENTS HERE
+              // I'm not sure if this is selecting all methods or just the one that relate to a given guideline.
+            });
+        }
+      }
+      }
+    });
+}
+
+function sortAllTaggedMethods() {
+  var tag = [];
+  var methodArray = [];
+  var APILink = "https://silvertagapi.azurewebsites.net/api/tags/";
+  fetch(APILink)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      // console.log(data);
+
+      for (var i in data) {
+        tag[i] = document.getElementById("tag_" + data[i]["tagID"]);
+        document.getElementById("methodContainer").innerHTML = "";
+        if (tag[i] != null) {
+
+        if (tag[i].checked == true) {
+          // console.log("tag " + data[i]["tagID"] + " is checked");
+          // console.log(data[i]["tagID"]);
+          // console.log(getTaggedMethods(data[i]["tagID"]));
+
+          fetch("https://silvertagapi.azurewebsites.net/api/taggedMethods/" + data[i]["tagID"])
+            .then(function(response) {
+              return response.json();
+            })
+            .then(function(data) {
+              methodArray = methodArray.concat(data);
+              return methodArray;
+            })
+            .then(function(originalArray) {
+                   var newArray = [];
+                   var lookupObject  = {};
+                   var guidelineArray = [];
+
+                   for (var i in originalArray) {
+                     if (originalArray[i]["guidelineID"])
+                     guidelineArray.push(originalArray[i])
+                     }
+
+                   for(var i in guidelineArray) {
+                      lookupObject[guidelineArray[i]["methodID"]] = guidelineArray[i];
+                   }
+
+                   for(i in lookupObject) {
+                       newArray.push(lookupObject[i]);
+                   }
+                    return newArray;
+            })
+            .then(function(uniqueArray) {
+              console.log(uniqueArray);
+               var output = "";
+               output += "<p>We've found <strong> " + uniqueArray.length + " </strong> methods that meet your current selection criteria</p>";
               for (var i in uniqueArray) {
                 var methodID = uniqueArray[i]["methodID"];
                 var uniqueName = uniqueArray[i]["uniqueName"];

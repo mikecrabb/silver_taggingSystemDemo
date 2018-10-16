@@ -32,6 +32,21 @@
     <main>
       <div class="container">
         <div class="row">
+          <div class="column">
+            <p>To sort methods, please select from the tags below.</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-9 row" id="tagCategories"></div>
+          <div class='col-sm-2'>
+            <div class=card>
+              <div class='section dark'>
+                <p><input type="checkbox" id="checkAll" onclick='sortAllTaggedMethods()'> Check All</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
           <div class="col-sm-12">
             <div id="methodContainer">
 
@@ -45,9 +60,21 @@
     </main>
 
   </body>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.0.2.js"></script>
 
   <script type="text/javascript" src="scripts/silverAPI.js"></script>
   <script type="text/javascript">
     getMethods();
+    getAllTagCategories();
+    window.addEventListener("load", function() {
+      sortAllTaggedMethods();
+    });
+
+  </script>
+
+  <script type="text/javascript">
+  $("#checkAll").click(function () {
+      $('input:checkbox').not(this).prop('checked', this.checked);
+  });
   </script>
 </html>
